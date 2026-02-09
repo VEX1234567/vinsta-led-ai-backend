@@ -17,7 +17,9 @@ const MODELS = [
   "deepseek/deepseek-chat:free",
   "meta-llama/llama-3-8b-instruct:free",
   "mistralai/mistral-7b-instruct:free",
-  "openchat/openchat-7b:free"
+  "openchat/openchat-7b:free",
+  "deepseek/deepseek-chat" // Paid fallback (very cheap)
+
 ];
 
 
@@ -103,6 +105,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
   console.log("Server running on port " + PORT)
 );
+
 
 
 
