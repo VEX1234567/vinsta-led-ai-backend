@@ -45,7 +45,13 @@ Keep answers simple and friendly.
 
     const data = await response.json();
 
-    const replyText = data.choices[0].message.content;
+if (!data.choices || !data.choices[0]) {
+  console.error("OpenRouter returned unexpected response:", data);
+  return res.status(500).json({ reply: "AI is temporarily unavailable. Please try again." });
+}
+
+const replyText = data.choices[0].message.content;
+
 
     res.json({ reply: replyText });
 
@@ -59,6 +65,7 @@ Keep answers simple and friendly.
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => console.log("Server running on port " + PORT));
+
 
 
 
