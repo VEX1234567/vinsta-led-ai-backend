@@ -29,7 +29,7 @@ app.post("/chat", async (req, res) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "meta-llama/llama-3-8b-instruct:free",
+        model: "openchat/openchat-7b:free",
         messages: [
           {
             role: "system",
@@ -76,6 +76,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
   console.log("Server running on port " + PORT)
 );
+
 
 
 
