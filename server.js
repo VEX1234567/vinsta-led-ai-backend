@@ -12,11 +12,16 @@ app.use(cors());
 app.use(express.json());
 
 app.post("/chat", async (req, res) => {
-
   try {
 
-    const userMessage = req.body.message;
+    // ✅ Validate message
+    const userMessage = req.body?.message;
 
+    if (!userMessage) {
+      return res.status(400).json({ reply: "Message is required." });
+    }
+
+    // ✅ Call OpenRouter
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -28,12 +33,10 @@ app.post("/chat", async (req, res) => {
         messages: [
           {
             role: "system",
-            content: `
-You are VINSTA LED Lighting Assistant.
+            content: `You are VINSTA LED Lighting Assistant.
 Help users choose LED lighting based on their needs.
 Recommend bulbs, panels, strip lights, industrial lighting and outdoor lighting.
-Keep answers simple and friendly.
-`
+Keep answers simple and friendly.`
           },
           {
             role: "user",
@@ -45,26 +48,36 @@ Keep answers simple and friendly.
 
     const data = await response.json();
 
-if (!data.choices || !data.choices[0]) {
-  console.error("OpenRouter returned unexpected response:", data);
-  return res.status(500).json({ reply: "AI is temporarily unavailable. Please try again." });
-}
+    // ✅ Handle OpenRouter API errors
+    if (!response.ok) {
+      console.error("OpenRouter API Error:", data);
+      return res.status(500).json({
+        reply: "AI service error. Please try again later."
+      });
+    }
 
-const replyText = data.choices[0].message.content;
-
+    // ✅ Safe response extraction
+    const replyText =
+      data?.choices?.[0]?.message?.content ||
+      "Sorry, I couldn't generate a response.";
 
     res.json({ reply: replyText });
 
   } catch (error) {
-    console.error("FULL ERROR:", error);
-    res.status(500).json({ error: error.message });
+    console.error("FULL SERVER ERROR:", error);
+    res.status(500).json({
+      reply: "Server error. Please try again."
+    });
   }
-
 });
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => console.log("Server running on port " + PORT));
+app.listen(PORT, () =>
+  console.log("Server running on port " + PORT)
+);
+
+
 
 
 
